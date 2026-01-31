@@ -23,7 +23,8 @@
         .btn:active { transform: scale(0.97); }
         .btn-primary { background: linear-gradient(135deg, #0A84FF, #5E5CE6); color: white; }
         .btn-secondary { background: rgba(255,255,255,0.1); color: #ccc; }
-        .btn-link4m { background: #fff; color: #000; display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 15px; }
+        
+        /* .btn-link4m đã được xóa style để code gọn hơn */
         
         .func-list { display: flex; flex-direction: column; gap: 15px; margin: 20px 0; }
         .func-item { display: flex; justify-content: space-between; align-items: center; background: rgba(255, 255, 255, 0.05); padding: 15px; border-radius: 15px; border: 1px solid rgba(255,255,255,0.1); }
@@ -68,7 +69,7 @@
         .console-line { color: #00FF00; font-size: 12px; margin-bottom: 5px; opacity: 0; animation: fadeInText 0.1s forwards; }
         @keyframes fadeInText { to { opacity: 1; } }
 
-        /* --- BẢNG BÁO LỖI (MỚI THÊM CHO IOS) --- */
+        /* --- BẢNG BÁO LỖI (IOS) --- */
         #errorModal .modal-content { border: 1px solid #FF453A; }
         .error-title { color: #FF453A; font-size: 20px; font-weight: bold; margin-bottom: 15px; display: block; text-transform: uppercase; }
         .error-msg { text-align: left; background: rgba(255, 69, 58, 0.1); padding: 15px; border-radius: 10px; color: #ff9a9a; font-size: 13px; line-height: 1.6; font-family: monospace; }
@@ -85,10 +86,6 @@
     <div class="card" id="loginBox">
         <h2 style="color:#fff; margin-top:0;">Nhập Key Để Sử Dụng ❗️</h2>
         
-        <a href="https://link4m.com/Lhg88M" target="_blank" class="btn btn-link4m">
-            🔑 <b>Lấy Key Miễn Phí</b>
-        </a>
-
         <p style="color:#aaa; font-size:13px; margin-bottom:5px;">Sao Chép Mã Bên Dưới Gửi Cho 𝐏𝐲𝐊𝟔 🧸 Để Nhận Key VIP:</p>
 
         <div class="device-box" onclick="copyDeviceID()">
