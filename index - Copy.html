@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>DPyK6</title>
+    <style>
+        /* GIỮ NGUYÊN GIAO DIỆN CŨ */
+        body { margin: 0; padding: 0; background-color: #000; color: #fff; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; height: 100vh; display: flex; justify-content: center; align-items: center; background-image: url('https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=2070&auto=format&fit=crop'); background-size: cover; background-position: center; overflow: hidden; }
+        .overlay { position: absolute; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); backdrop-filter:blur(15px); z-index:1; }
+        .card { position: relative; z-index: 2; width: 85%; max-width: 380px; background: rgba(30,30,30,0.95); border-radius: 20px; padding: 30px; text-align: center; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 20px 50px rgba(0,0,0,0.8); animation: fadeIn 0.5s ease; max-height: 90vh; overflow-y: auto; }
+        .card::-webkit-scrollbar { display: none; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .device-box { background: rgba(255, 255, 255, 0.08); padding: 15px; border-radius: 10px; margin: 15px 0; border: 1px dashed #555; cursor: pointer; transition: 0.2s; }
+        .device-box:active { background: rgba(255,255,255,0.2); }
+        .device-id { font-family: monospace; font-size: 18px; color: #0f0; font-weight: bold; letter-spacing: 1px; word-break: break-all;}
+        input { width: 100%; padding: 15px; border-radius: 12px; border: 1px solid #444; background: #222; color: #fff; text-align: center; font-size: 16px; margin-bottom: 15px; outline: none; box-sizing: border-box; }
+        input:focus { border-color: #0A84FF; }
+        .btn { width: 100%; padding: 14px; border-radius: 12px; border: none; font-size: 16px; font-weight: bold; cursor: pointer; display: block; text-decoration: none; box-sizing: border-box; margin-bottom: 10px; transition: transform 0.1s; }
+        .btn:active { transform: scale(0.97); }
+        .btn-primary { background: linear-gradient(135deg, #0A84FF, #5E5CE6); color: white; }
+        .btn-secondary { background: rgba(255,255,255,0.1); color: #ccc; }
+        .btn-link4m { background: #fff; color: #000; display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 15px; }
+        .func-list { display: flex; flex-direction: column; gap: 15px; margin: 20px 0; }
+        .func-item { display: flex; justify-content: space-between; align-items: center; background: rgba(255, 255, 255, 0.05); padding: 15px; border-radius: 15px; border: 1px solid rgba(255,255,255,0.1); }
+        .func-info { text-align: left; }
+        .func-name { font-size: 15px; font-weight: 600; color: #fff; margin-bottom: 3px; display: block; }
+        .func-status { font-size: 11px; color: #666; }
+        .switch { position: relative; display: inline-block; width: 50px; height: 28px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #3a3a3a; transition: .4s; border-radius: 34px; }
+        .slider:before { position: absolute; content: ""; height: 20px; width: 20px; left: 4px; bottom: 4px; background-color: white; transition: .4s; border-radius: 50%; box-shadow: 0 2px 5px rgba(0,0,0,0.3); }
+        input:checked + .slider { background-color: #30D158; }
+        input:checked + .slider:before { transform: translateX(22px); }
+        .switch.loading { opacity: 0.6; pointer-events: none; }
+        .btn-game { background: linear-gradient(135deg, #00C6FF, #0072FF); color: white; margin-top: 15px; }
+        .status-popup { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.9); background: rgba(20, 20, 20, 0.98); padding: 25px 40px; border-radius: 15px; z-index: 9999; text-align: center; box-shadow: 0 10px 40px rgba(0,0,0,0.9); opacity: 0; visibility: hidden; transition: 0.3s; min-width: 280px; border: 1px solid rgba(255,255,255,0.1); }
+        .status-popup.show { opacity: 1; visibility: visible; transform: translate(-50%, -50%) scale(1); }
+        .status-icon { font-size: 40px; margin-bottom: 10px; display: block; }
+        .status-text { font-size: 16px; font-weight: bold; display: block; }
+        .success-mode { border-color: #30D158; } .success-mode .status-icon, .success-mode .status-text { color: #30D158; }
+        .error-mode { border-color: #FF453A; } .error-mode .status-icon, .error-mode .status-text { color: #FF453A; }
+        .modal { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 10; display: flex; flex-direction: column; justify-content: center; align-items: center; opacity: 0; visibility: hidden; transition: 0.3s; }
+        .modal.show { opacity: 1; visibility: visible; }
+        .modal-content { background: #1c1c1e; padding: 25px; border-radius: 20px; width: 80%; text-align: center; }
+        .hidden { display: none !important; }
+        .timer { font-family: monospace; color: #FFD60A; font-weight: bold; margin-top: 5px; }
+        .spinner { display: inline-block; width: 12px; height: 12px; border: 2px solid rgba(255,255,255,0.3); border-radius: 50%; border-top-color: #fff; animation: spin 1s ease-in-out infinite; margin-right: 5px; vertical-align: middle; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+    <div class="overlay"></div>
+
+    <div id="statusModal" class="status-popup">
+        <span id="statusIcon" class="status-icon"></span>
+        <span id="statusText" class="status-text"></span>
+    </div>
+
+    <div class="card" id="loginBox">
+        <h2 style="color:#fff; margin-top:0;">Nhập Key Để Sử Dụng ❗️</h2>
+        
+        <a href="https://link4m.com/Lhg88M" target="_blank" class="btn btn-link4m">
+            🔑 <b>Lấy Key Miễn Phí</b>
+        </a>
+
+        <p style="color:#aaa; font-size:13px; margin-bottom:5px;">Sao Chép Mã Bên Dưới Gửi Cho 𝐏𝐲𝐊𝟔 🧸 Để Nhận Key VIP:</p>
+
+        <div class="device-box" onclick="copyDeviceID()">
+            <div class="device-id" id="showDeviceID">ĐANG QUÉT...</div>
+            <div style="font-size:11px; color:#aaa; margin-top:5px;">(Chạm để sao chép)</div>
+        </div>
+
+        <input type="text" id="inputKey" placeholder="Dán Key Vào Đây Để Kích Hoạt...">
+        <button class="btn btn-primary" onclick="checkKey()">KÍCH HOẠT NGAY</button>
+        <button class="btn btn-secondary" onclick="window.open('https://zalo.me/0901323149')">Liên Hệ 𝐏𝐲𝐊𝟔 🧸</button>
+    </div>
+
+    <div class="card hidden" id="contentBox">
+        <div style="display:flex; align-items:center; gap:15px; margin-bottom:15px;">
+            <img src="https://i.imgur.com/w5tX1Pn.jpg" style="width:60px; border-radius:15px; border:1px solid #444;">
+            <div style="text-align:left;">
+                <h2 style="margin:0; font-size:18px; color:#fff;">𝐃𝐏𝐲𝐊𝟔 🧸 𝐕𝐈𝐏</h2>
+                <div style="font-size:11px; color:#aaa;">Hết hạn: <span id="expiryDateShow">...</span></div>
+                <div id="countdown" class="timer">--:--:--</div>
+            </div>
+        </div>
+
+        <div class="func-list">
+            <div class="func-item">
+                <div class="func-info"><span class="func-name">🚀 Fix Lag Siêu Mượt</span><span class="func-status" id="status_1">Đang tắt</span></div>
+                <label class="switch" id="switch_1"><input type="checkbox" onchange="toggleFunc(this, 1)"><span class="slider"></span></label>
+            </div>
+            <div class="func-item">
+                <div class="func-info"><span class="func-name">⚡ Tối Ưu Mạng</span><span class="func-status" id="status_2">Đang tắt</span></div>
+                <label class="switch" id="switch_2"><input type="checkbox" onchange="toggleFunc(this, 2)"><span class="slider"></span></label>
+            </div>
+            <div class="func-item">
+                <div class="func-info"><span class="func-name">🎯 Hỗ Trợ Kéo Tâm VIP</span><span class="func-status" id="status_3">Đang tắt</span></div>
+                <label class="switch" id="switch_3"><input type="checkbox" onchange="toggleFunc(this, 3)"><span class="slider"></span></label>
+            </div>
+        </div>
+
+        <button class="btn btn-game" onclick="showGameModal()">🎮 MỞ GAME FREE FIRE</button>
+        <button class="btn btn-secondary" onclick="showLogoutModal()" style="margin-top:10px;">Đăng Xuất</button>
+    </div>
+
+    <div class="modal" id="gameModal">
+        <div class="modal-content">
+            <h2 style="color:#fff; margin-bottom:20px;">Chọn Phiên Bản</h2>
+            <button class="btn btn-primary" onclick="openGame('normal')">Free Fire Thường</button>
+            <button class="btn btn-game" onclick="openGame('max')">Free Fire MAX</button>
+            <button class="btn btn-secondary" onclick="closeGameModal()">Đóng</button>
+        </div>
+    </div>
+
+    <div class="modal" id="logoutModal">
+        <div class="modal-content">
+            <h2 style="color:#FF453A; margin-bottom:10px;">⚠️ Cảnh Báo</h2>
+            <p style="color:#ccc; margin-bottom:20px;">Đăng Xuất Sẽ Phải Nhập Lại Key ❗️</p>
+            <button class="btn btn-primary" onclick="confirmLogout()" style="background:#FF453A; margin-bottom:10px;">Đồng Ý</button>
+            <button class="btn btn-secondary" onclick="closeLogoutModal()">Hủy</button>
+        </div>
+    </div>
+
+    <script>
+        const SECRET_SALT = "HEADLOCK_VIP_2025_HARDWARE"; 
+
+        async function getStableDeviceID() {
+            const data = [navigator.platform, navigator.hardwareConcurrency, screen.height, screen.width, screen.colorDepth, Intl.DateTimeFormat().resolvedOptions().timeZone].join("-");
+            const msgBuffer = new TextEncoder().encode(data);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+            return "IOS-" + Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('').substring(0, 8).toUpperCase();
+        }
+
+        let currentDeviceID = "";
+        getStableDeviceID().then(id => {
+            currentDeviceID = id;
+            document.getElementById('showDeviceID').innerText = currentDeviceID;
+        });
+
+        function copyDeviceID() {
+            navigator.clipboard.writeText(currentDeviceID);
+            showPopup(true, "Đã sao chép ID!");
+            setTimeout(hidePopup, 1000);
+        }
+
+        // --- KIỂM TRA KEY ---
+        function checkKey() {
+            let userKey = document.getElementById('inputKey').value.trim();
+            if(!userKey) return;
+
+            try {
+                let decoded = atob(userKey);
+                let parts = decoded.split("|");
+                
+                if (parts.length === 2) {
+                    let expiryTimestamp = parseInt(parts[0]);
+                    let signature = parts[1];
+                    let rawCheck = currentDeviceID + expiryTimestamp + SECRET_SALT;
+                    let expectedSignature = btoa(rawCheck).substr(0, 15);
+
+                    if (signature === expectedSignature) return validateTime(expiryTimestamp, userKey);
+                }
+
+                if (parts.length === 3) {
+                    let expiryTimestamp = parseInt(parts[0]);
+                    let signature = parts[1];
+                    let keyID = parts[2];
+                    let rawCheck = keyID + expiryTimestamp + SECRET_SALT;
+                    let expectedSignature = btoa(rawCheck).substr(0, 15);
+
+                    if (signature === expectedSignature) return validateTime(expiryTimestamp, userKey);
+                }
+
+                showPopup(false, "Key Không Đúng Hoặc Sai Máy!");
+                setTimeout(hidePopup, 2000);
+
+            } catch (e) {
+                showPopup(false, "Lỗi Định Dạng Key");
+                setTimeout(hidePopup, 2000);
+            }
+        }
+
+        function validateTime(expiryTimestamp, userKey) {
+            let now = new Date().getTime();
+            if (now > expiryTimestamp) {
+                showPopup(false, "Key Đã Hết Hạn Sử Dụng");
+                setTimeout(hidePopup, 2000);
+            } else {
+                showPopup(true, "Kích Hoạt Thành Công!");
+                localStorage.setItem('savedKey_V7', userKey);
+                setTimeout(() => { hidePopup(); showContent(expiryTimestamp); }, 1500);
+            }
+        }
+
+        function showContent(expiryTimestamp) {
+            document.getElementById('loginBox').classList.add('hidden');
+            document.getElementById('contentBox').classList.remove('hidden');
+            let dateObj = new Date(expiryTimestamp);
+            document.getElementById('expiryDateShow').innerText = dateObj.getDate() + "/" + (dateObj.getMonth()+1) + " " + dateObj.getHours() + ":" + dateObj.getMinutes();
+
+            setInterval(() => {
+                let now = new Date().getTime();
+                let distance = expiryTimestamp - now;
+                if (distance < 0) { confirmLogout(); return; } // Hết giờ tự đăng xuất
+                let h = Math.floor(distance / (1000 * 60 * 60));
+                let m = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                let s = Math.floor((distance % (1000 * 60)) / 1000);
+                document.getElementById('countdown').innerText = (h<10?"0"+h:h) + ":" + (m<10?"0"+m:m) + ":" + (s<10?"0"+s:s);
+            }, 1000);
+        }
+
+        function toggleFunc(checkbox, id) {
+            const statusText = document.getElementById('status_' + id);
+            const switchLabel = document.getElementById('switch_' + id);
+            const isOn = checkbox.checked;
+            checkbox.disabled = true;
+            switchLabel.classList.add('loading');
+
+            if (isOn) {
+                statusText.innerHTML = '<span class="spinner"></span> Đang bật...';
+                setTimeout(() => {
+                    statusText.innerText = '✅ Đã Bật'; statusText.style.color = '#30D158';
+                    showPopup(true, "Đã Kích Hoạt Thành Công"); setTimeout(hidePopup, 1500);
+                    checkbox.disabled = false; switchLabel.classList.remove('loading');
+                    if (navigator.vibrate) navigator.vibrate(200);
+                }, 3000);
+            } else {
+                statusText.innerHTML = '<span class="spinner"></span> Đang tắt...';
+                setTimeout(() => {
+                    statusText.innerText = 'Đã tắt'; statusText.style.color = '#666';
+                    showPopup(false, "Đã Tắt Chức Năng"); setTimeout(hidePopup, 1000);
+                    checkbox.disabled = false; switchLabel.classList.remove('loading');
+                }, 1000);
+            }
+        }
+
+        // --- XỬ LÝ MỞ GAME (ĐÃ SỬA: KHÔNG QUA APPSTORE) ---
+        function showGameModal() { document.getElementById('gameModal').classList.add('show'); }
+        function closeGameModal() { document.getElementById('gameModal').classList.remove('show'); }
+        
+        function openGame(type) {
+            let url = type === 'normal' ? "freefireth://" : "freefiremax://";
+            // Chỉ mở App Scheme, không redirect sang Store nữa
+            window.location.href = url;
+            closeGameModal();
+        }
+
+        // --- XỬ LÝ ĐĂNG XUẤT (CÓ BẢNG CẢNH BÁO) ---
+        function showLogoutModal() {
+            document.getElementById('logoutModal').classList.add('show');
+        }
+        function closeLogoutModal() {
+            document.getElementById('logoutModal').classList.remove('show');
+        }
+        function confirmLogout() {
+            localStorage.removeItem('savedKey_V7');
+            location.reload();
+        }
+
+        function showPopup(isSuccess, msg) {
+            const m = document.getElementById('statusModal');
+            const i = document.getElementById('statusIcon');
+            const t = document.getElementById('statusText');
+            m.className = "status-popup " + (isSuccess ? "success-mode" : "error-mode");
+            i.innerHTML = isSuccess ? "✅" : "❌";
+            t.innerText = msg;
+            m.classList.add('show');
+        }
+        function hidePopup() { document.getElementById('statusModal').classList.remove('show'); }
+
+        let saved = localStorage.getItem('savedKey_V7');
+        if (saved) {
+            let checkInterval = setInterval(() => {
+                if (currentDeviceID) {
+                    clearInterval(checkInterval);
+                    document.getElementById('inputKey').value = saved;
+                    checkKey(); 
+                }
+            }, 100);
+        }
+    </script>
+</body>
+</html>
