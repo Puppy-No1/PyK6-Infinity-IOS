@@ -24,8 +24,6 @@
         .btn-primary { background: linear-gradient(135deg, #0A84FF, #5E5CE6); color: white; }
         .btn-secondary { background: rgba(255,255,255,0.1); color: #ccc; }
         
-        /* .btn-link4m đã được xóa style để code gọn hơn */
-        
         .func-list { display: flex; flex-direction: column; gap: 15px; margin: 20px 0; }
         .func-item { display: flex; justify-content: space-between; align-items: center; background: rgba(255, 255, 255, 0.05); padding: 15px; border-radius: 15px; border: 1px solid rgba(255,255,255,0.1); }
         .func-info { text-align: left; }
@@ -121,11 +119,7 @@
                 <div class="func-info"><span class="func-name">📱 Tăng Nhạy Màn Hình</span><span class="func-status" id="status_3">Đang tắt</span></div>
                 <label class="switch" id="switch_3"><input type="checkbox" onchange="toggleFunc(this, 3)"><span class="slider"></span></label>
             </div>
-            <div class="func-item">
-                <div class="func-info"><span class="func-name">🎯 Hỗ Trợ Kéo Tâm VIP</span><span class="func-status" id="status_4">Đang tắt</span></div>
-                <label class="switch" id="switch_4"><input type="checkbox" onchange="toggleFunc(this, 4)"><span class="slider"></span></label>
             </div>
-        </div>
 
         <button class="btn btn-game" onclick="showGameModal()">🎮 MỞ GAME FREE FIRE</button>
         <button class="btn btn-secondary" onclick="showLogoutModal()" style="margin-top:10px;">Đăng Xuất</button>
@@ -169,7 +163,7 @@
             const data = [navigator.platform, navigator.hardwareConcurrency, screen.height, screen.width, screen.colorDepth, Intl.DateTimeFormat().resolvedOptions().timeZone].join("-");
             const msgBuffer = new TextEncoder().encode(data);
             const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
-            // GIỮ NGUYÊN IOS-
+            // GIỮ NGUYÊN ID CỦA IOS
             return "IOS-" + Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('').substring(0, 8).toUpperCase();
         }
 
@@ -273,10 +267,10 @@
                 switchLabel.classList.add('loading');
                 statusText.innerHTML = '<span class="spinner"></span> Đang xử lý...';
 
-                if (id === 1) runConsoleEffect("FIX LAG", ["Cleaning iOS Cache...", "Freeing Up RAM...", "Optimizing GPU Metal...", "FPS Unlocked: 60"], checkbox, id);
+                if (id === 1) runConsoleEffect("FIX LAG", ["Cleaning iOS Cache...", "Freeing Up RAM...", "Optimizing GPU Metal...", "FPS Unlocked: 60/90"], checkbox, id);
                 if (id === 2) runConsoleEffect("NET BOOST", ["Pinging Apple Server...", "DNS Changed: 1.1.1.1", "Reducing Ping...", "Connection Stable: OK"], checkbox, id);
                 if (id === 3) runConsoleEffect("SENSITIVITY", ["Analyzing Touch Panel...", "Reducing Touch Delay...", "Calibration: +80%", "Response Time: 0.1ms"], checkbox, id);
-                if (id === 4) runConsoleEffect("AIM ASSIST", ["Injecting AimModule...", "Bypassing Anti-Cheat...", "Headshot Rate: +90%", "Lock Target: Active"], checkbox, id);
+                // ID 4 Kéo Tâm đã xóa
 
             } else {
                 setTimeout(() => {
